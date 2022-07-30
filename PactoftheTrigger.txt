@@ -1,0 +1,99 @@
+var iFileName = "PactoftheTrigger.js";
+
+SourceList["PotT"] = {
+	name : "Pact of the Trigger",
+	abbreviation : "PotT",
+	group : "Homebrew",
+	url : "https://data29.kemono.party/data/8c/8a/8c8a138debd94f507c2828c20039e8f5576dfc145ad10e0bfa344758ed8ced7e.pdf?f=Pact%20of%20the%20Trigger.pdf",
+	Date: "2022/07/28"
+};
+
+ClassList.warlock.features["pact boon"].choices.push("Pact of the Trigger"); // This is how the name appears in the menu
+ClassList.warlock.features["pact boon"].choices.sort();
+ClassList.warlock.features["pact boon"]["pact of the trigger"] = { // This has to be identical to the name in the first line, but all lowercase!
+	name : "Pact of the Trigger", // This is the name as it will appear in the Class Features field
+	source : ["PotT", 1],
+	description : "\n   " + "You may use an action to call on your patrons power to form a Hex Gun" + "\n   " + "Your Hex Gun disappears if it is more than 5 feet away from you for 1 minute or more. It also disappears if you use this feature again, if you dismiss it (no action required), or you die." + "\n   " + "Your Hex Gun acts as a spell casting focus, and when you cast cantrips with it, it channels them as bullets (These still count as spells)." + "\n   " + "Instead of increasing the damage of the cantrip when you reach certain levels, you can cast the cantrip additional times as part of the same action (Except Eldritch Blast, which is cast as normal). To be cast this way, the cantrip must deal damage, must make a spell attack or require a saving throw, and have a range other than self."+ "\n   " + "You can fire cantrips in this manner 2 times at level 5, 3 times at level 11, and 4 times at level 17. If you do, the cantrip can deal its base damage more than once, but its other effects cannot be applied again."+ "\n   " + "Your Hex gun can take on 2 forms, Revolver and Sniper forms."+ "\n   " + "Revolver Form: Being within 5 feet of a hostile creature doesn't impose disadvantage on your ranged spell attack rolls cast through the hex gun. While wielding this weapon you know the shocking grasp cantrip."+ "\n   " + "Sniper Form: Your ranged spell attack rolls cast through the Hex Gun have their range doubled, and ignore half-cover. While wielding this weapon, you know the Ray of Frost Cantrip.",
+	spellcastingBonus : [{
+		name : "Pact of the Trigger Revolver",
+		spells : ["shocking grasp"],
+		selection : ["shocking grasp"],
+	}, {
+		name : "Pact of the Trigger Sniper",
+		spells : ["ray of frost"],
+		selection : ["ray of frost"],
+	}]
+};
+
+AddWarlockInvocation("Agonizing Shots (prereq: Pact of the Trigger feature)", {
+	name : "Agonizing Shots",
+	source : [["PotT", 1]],
+	submenu : "[improves Pact of the Trigger]",
+	description : "\n   When you cast a cantrip, add your Spell Modifier to the damage it deals on a hit (if you don't already add your Spell Modifier to it).",
+	prereqeval : function(v) {
+		return GetFeatureChoice('class', 'warlock', 'pact boon').indexOf("pact of the trigger") !== -1;
+	},
+});
+
+AddWarlockInvocation("Crippling Shot (prereq: Pact of the Trigger feature)", {
+	name : "Crippling Shot",
+	source : [["PotT", 1]],
+	submenu : "[improves Pact of the Trigger]",
+	description : "\n   Once per turn, when you damage an enemy with an attack made using your Hex Gun, you can force them to make a Strength saving throw against your spell save DC or fall prone and have their speed reduced to 0 until the start of your next turn.",
+	prereqeval : function(v) {
+		return GetFeatureChoice('class', 'warlock', 'pact boon').indexOf("pact of the trigger") !== -1;
+	},
+	usages: "Spell Modifier per ",
+	usagescalc : "event.value = How('Spell Modifier')",
+	recovery: "long rest"
+});
+
+AddWarlockInvocation("Bullet Hell (prereq: level 5 warlock, Pact of the Trigger feature (Revolver Form))", {
+	name : "Bullet Hell",
+	source : [["PotT", 1]],
+	submenu : "[improves Pact of the Trigger]",
+	description : "\n   You temporarily duplicate your Hex Gun to unleash a flurry of bullets as an action. All creatures within a 10 foot cone in front of you must succeed a Dexterity saving throw against your spell save dc or take 2d10 force damage. This damage increase to 3d10 at level 11, and 4d10 at level 17. To use this action you need to be holding your Hex Gun in one hand and have the other hand free.",
+	prereqeval : function(v) {
+		return classes.known.warlock.level >= 5 && GetFeatureChoice('class', 'warlock', 'pact boon').indexOf("pact of the trigger") !== -1;
+	},
+	usages: "Spell Modifier per ",
+	usagescalc : "event.value = How('Spell Modifier')",
+	recovery: "short or long rest"
+});
+
+
+AddWarlockInvocation("Quickstep (prereq: level 7 warlock, Pact of the Trigger feature)", {
+	name : "Quick Step",
+	source : [["PotT", 1]],
+	submenu : "[improves Pact of the Trigger]",
+	description : "\n   Your reflexes are honed. As a reaction, when an enemy makes a melee attack against you, before being hit, if your speed isn't 0, you can move 5ft away from the foe without triggering attacks of opportunity, potentially avoiding the attack if you leave its range.",
+	prereqeval : function(v) {
+		return classes.known.warlock.level >= 7 && GetFeatureChoice('class', 'warlock', 'pact boon').indexOf("pact of the trigger") !== -1;
+	},
+	usages: "Spell Modifier per ",
+	usagescalc : "event.value = How('Spell Modifier')",
+	recovery: "short or long rest"
+});
+
+AddWarlockInvocation("Headshots (prereq: level 9 warlock, Pact of the Trigger feature (Sniper Form))", {
+	name : "Headshots",
+	source : [["PotT", 1]],
+	submenu : "[improves Pact of the Trigger]",
+	description : "\n   Once per long rest, as a bonus action you can enhance your focus to see the weak spots of your foes. For the next minute attacks you make using your hex gun score a critical hit on a roll of 19 or 20 on the dice.",
+	prereqeval : function(v) {
+		return classes.known.warlock.level >= 9 && GetFeatureChoice('class', 'warlock', 'pact boon').indexOf("pact of the trigger") !== -1;
+	},
+	usages: "Spell Modifier per ",
+	usagescalc : "event.value = How('Spell Modifier')",
+	recovery: "short or long rest"
+});
+
+AddWarlockInvocation("Dead Eye (prereq: level 15 warlock, Pact of the Trigger feature (Sniper Form))", {
+	name : "Dead Eye",
+	source : [["PotT", 1]],
+	submenu : "[improves Pact of the Trigger]",
+	description : "\n   If you haven't moved this turn, you can take aim as a bonus action, reducing your speed to 0 and granting you advantage on all attacks you make using your hex gun until the end of your turn.",
+	prereqeval : function(v) {
+		return classes.known.warlock.level >= 15 && GetFeatureChoice('class', 'warlock', 'pact boon').indexOf("pact of the trigger") !== -1;
+	},
+});
